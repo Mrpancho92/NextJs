@@ -1,12 +1,35 @@
+import Link from "next/link";
 import Heading from "../../../components/Heading";
-const Posts = () => {
+
+export const metadata = {
+  title: "Posts",
+};
+
+async function getData() {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+    next: {
+      revalidate: 60,
+    },
+  });
+
+  if (!response.ok) throw new Error("Unable to fetch posts!");
+
+  return response.json();
+}
+
+const Posts = async () => {
+  const posts = await getData();
+
   return (
     <>
       <Heading text="Posts list:" />
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde quo, dolore dolor ut pariatur aliquid eligendi
-        consectetur culpa vel! Expedita ut officiis suscipit corporis placeat nisi cupiditate nostrum. Itaque, error!
-      </p>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>
+            <Link href={`/posts/${post.id}`}>{post.title}</Link>
+          </li>
+        ))}
+      </ul>
     </>
   );
 };
